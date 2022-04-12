@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "133200764165",
+    "project_id": "news-app-1e029",
+    "storage_bucket": "news-app-1e029.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133200764165:android:b5ffeb6aa17bc1417d6b6c",
+        "android_client_info": {
+          "package_name": "com.javier_delarosa.market_news_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "133200764165-hdfdktet6nqfnljgl94r60cc3j4h8oor.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOWHPD4t7NS-jHdpVAantTJuJBAZ-jXbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "133200764165-hdfdktet6nqfnljgl94r60cc3j4h8oor.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

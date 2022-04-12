@@ -1,8 +1,8 @@
-class ArticleModel {
+class Article {
   String category, date, title, image, source, summary, url;
-  int? id;
+  String? id;
 
-  ArticleModel({
+  Article({
     this.id,
     required this.category,
     required this.date,

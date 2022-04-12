@@ -40,7 +40,6 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
               return prevState.status != currState.status;
             },
             builder: (context, newsState) {
-              print("Here: ${newsState.status}");
               if (newsState.status == NewsStatus.loaded) {
                 return TabBarView(
                   children: [
