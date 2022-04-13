@@ -1,9 +1,10 @@
 class Article {
   String category, date, title, image, source, summary, url;
-  String? id;
+  int id, dateUnix;
 
   Article({
-    this.id,
+    required this.id,
+    required this.dateUnix,
     required this.category,
     required this.date,
     required this.title,

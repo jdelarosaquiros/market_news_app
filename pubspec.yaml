@@ -40,6 +40,12 @@ dependencies:
   firebase_core: ^1.14.0
   cloud_firestore: ^3.1.11
   firebase_storage: ^10.2.11
+  sqflite: ^2.0.2
+  path_provider: ^2.0.9
+  font_awesome_flutter: ^10.1.0
+  http: ^0.13.4
+  intl: ^0.17.0
+
 
 dev_dependencies:
   flutter_test:

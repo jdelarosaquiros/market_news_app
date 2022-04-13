@@ -21,9 +21,15 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData.dark().copyWith(
-          primaryColor: Colors.blue[400],
-          indicatorColor: Colors.lightBlue[400],
-          colorScheme: ThemeData().colorScheme.copyWith(primary: Colors.grey[800],secondary: Colors.blue[600]),
+          primaryColor: Colors.blue[300],
+          indicatorColor: Colors.lightBlue[300],
+          scaffoldBackgroundColor: const Color(0x12121212),
+          colorScheme: ThemeData().colorScheme.copyWith(
+                primary: const Color(0x52525252),
+                onPrimary: Colors.white,
+                secondary: Colors.blue[300],
+                onSecondary: Colors.black,
+              ),
         ),
         home: const NewsTabBarView(),
       ),
