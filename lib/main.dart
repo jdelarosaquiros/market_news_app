@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData.dark().copyWith(
           primaryColor: Colors.blue[300],
           indicatorColor: Colors.lightBlue[300],
-          scaffoldBackgroundColor: const Color(0x12121212),
+          scaffoldBackgroundColor: const Color(0x52525252),
           colorScheme: ThemeData().colorScheme.copyWith(
                 primary: const Color(0x52525252),
                 onPrimary: Colors.white,
