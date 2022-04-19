@@ -13,7 +13,7 @@ class NewsCubit extends Cubit<NewsState> {
 
   NewsCubit()
       : super(NewsState(
-            news: [], status: NewsStatus.initial, hasReachedMax: false));
+            news: const [], status: NewsStatus.initial, hasReachedMax: false));
 
   Future<void> fetchNews() async {
     List<Article> news = [];
@@ -61,95 +61,10 @@ class NewsCubit extends Cubit<NewsState> {
     return news;
   }
 
-  Future<void> loadNews() async {
-    List<Article> articles = [];
-
-    emit(state.copyWith(status: NewsStatus.loadingMore));
-
-    String lastArticleId = state.news[state.news.length - 1].id.toString();
-    Query articleQuery = FirebaseFirestore.instance
-        .collection('articles')
-        .orderBy('dateUnix').limit(queryLimit);
-
-    if (state.news.isNotEmpty) {
-      FirebaseFirestore.instance
-          .collection('articles')
-          .doc(lastArticleId)
-          .get()
-          .then((document) {
-        if (document.exists) {
-          print("Exist");
-          articleQuery.startAfterDocument(document);
-        }
-      });
-    }
-
-    articleQuery.get().then((snapShot) {
-      List<Article> oldNews = state.news;
-      int oldLength = oldNews.length;
-      List<QueryDocumentSnapshot> docs = snapShot.docs;
-      // print("Doc Length: ${docs.length}");
-      // print("Current: ${oldNews[state.news.length - 1].title}");
-      // print("Found: ${docs[docs.length - 1]["title"]}");
-      // for (QueryDocumentSnapshot doc in docs) {
-      //   print(doc["title"]);
-      // }
-      //Todo: Fix or delete condition - might never be true
-      if (docs.length < queryLimit) {
-        print("Reached End1");
-        emit(state.copyWith(hasReachedMax: true));
-      }
-      if (docs[docs.length - 1].id == lastArticleId) {
-        print("Reached End2");
-        for(int i=0; i<queryLimit; i++){
-          if(docs[i].id != oldNews[oldLength - queryLimit + i].id.toString()){
-            articles.add(Article(
-              id: int.parse(docs[i].id),
-              dateUnix: int.parse(docs[i]["dateUnix"]),
-              category: docs[i]["category"],
-              date: docs[i]["date"],
-              title: docs[i]["title"],
-              image: docs[i]["image"],
-              source: docs[i]["source"],
-              summary: docs[i]["summary"],
-              url: docs[i]["url"],
-            ));
-          }
-        }
-        emit(state.copyWith(status: NewsStatus.loaded, hasReachedMax: true));
-      } else {
-        for (QueryDocumentSnapshot doc in docs) {
-          articles.add(Article(
-            id: int.parse(doc.id),
-            dateUnix: int.parse(doc["dateUnix"]),
-            category: doc["category"],
-            date: doc["date"],
-            title: doc["title"],
-            image: doc["image"],
-            source: doc["source"],
-            summary: doc["summary"],
-            url: doc["url"],
-          ));
-        }
-        emit(state.copyWith(
-          news: [...state.news, ...articles],
-          status: NewsStatus.loaded,
-        ));
-      }
-    }).catchError((error) {
-      //Todo: Fix this error
-      print(error.toString());
-      emit(state.copyWith(status: NewsStatus.error));
-    });
-  }
-
   //Todo: Delete comments
   void saveArticlesInDatabase({required List<Article> news}) {
     CollectionReference articleCollection =
-        FirebaseFirestore.instance.collection('articles');
-
-    CollectionReference categoryCollection =
-        FirebaseFirestore.instance.collection('categories');
+    FirebaseFirestore.instance.collection('articles');
 
     for (Article article in news) {
       // Save article
@@ -164,5 +79,53 @@ class NewsCubit extends Cubit<NewsState> {
         "url": article.url,
       }).catchError((error) {});
     }
+  }
+
+  Future<void> loadNews() async {
+    List<Article> articles = [];
+    Query articleQuery;
+    String lastArticleDate;
+
+    emit(state.copyWith(status: NewsStatus.loadingMore));
+
+    if (state.news.isNotEmpty) {
+      lastArticleDate = state.news[state.news.length - 1].dateUnix.toString();
+      articleQuery = FirebaseFirestore.instance
+          .collection('articles')
+          .orderBy('dateUnix', descending: true)
+          .where('dateUnix', isLessThan: lastArticleDate);
+    } else {
+      articleQuery = FirebaseFirestore.instance
+          .collection('articles')
+          .orderBy('dateUnix', descending: true);
+    }
+
+    articleQuery.limit(queryLimit).get().then((snapShot) {
+      List<QueryDocumentSnapshot> docs = snapShot.docs;
+
+      if (docs.length < queryLimit) {
+        emit(state.copyWith(status: NewsStatus.loaded, hasReachedMax: true));
+      }
+
+      for (QueryDocumentSnapshot doc in docs) {
+        articles.add(Article(
+          id: int.parse(doc.id),
+          dateUnix: int.parse(doc["dateUnix"]),
+          category: doc["category"],
+          date: doc["date"],
+          title: doc["title"],
+          image: doc["image"],
+          source: doc["source"],
+          summary: doc["summary"],
+          url: doc["url"],
+        ));
+      }
+      emit(state.copyWith(
+          news: [...state.news, ...articles], status: NewsStatus.loaded));
+    }).catchError((error) {
+      //Todo: Fix this error
+      print(error.toString());
+      emit(state.copyWith(status: NewsStatus.error));
+    });
   }
 }

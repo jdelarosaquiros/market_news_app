@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/bloc/news_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:market_news_app/models/article_model.dart';
 import 'package:market_news_app/screens/article_preview.dart';
-import 'package:market_news_app/services/time_helper.dart';
+import 'package:market_news_app/screens/favorites_screen.dart';
+import 'package:market_news_app/screens/search_screen.dart';
 import 'package:market_news_app/widgets/article_thumbnail.dart';
 import 'package:market_news_app/widgets/bottom_loader_indicator.dart';
+
+import 'bloc/favorites_cubit.dart';
 
 class NewsTabBarView extends StatefulWidget {
   const NewsTabBarView({Key? key}) : super(key: key);
@@ -33,8 +35,8 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
   }
 
   void _scrollListener() {
-    const double scrollThreshold = 50;
-    const double offset = 1000;
+    const double scrollThreshold = 400;
+    const double offset = 0;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
 
@@ -44,7 +46,6 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
         !context.read<NewsCubit>().state.hasReachedMax &&
         !isLoading) {
       isLoading = true;
-      print("Here -------");
       context.read<NewsCubit>().loadNews();
     }
   }
@@ -54,6 +55,22 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        appBar: AppBar(
+          //toolbarHeight: 30,
+          title: const Text("News"), //TODO: Replace with app icon and name
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.white, size: 30),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) {
+                    return SearchScreen();
+                  }),
+                );
+              },
+            ),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
           elevation: 10,
           currentIndex: _selectedIndex,
@@ -109,90 +126,74 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
             ),
           ],
         ),
-        appBar: AppBar(
-          //toolbarHeight: 30,
-          title: const Text("News"), //TODO: Replace with app icon and name
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.white, size: 30),
-              onPressed: () {
-                // TODO: Search Function
-              },
-            ),
-          ],
-        ),
+
         body: SafeArea(
           child: BlocConsumer<NewsCubit, NewsState>(
-              listener: (context, currState) {
-            //_currState = currState;
-            //_currContext = context;
-            //if (currState.status != NewsStatus.loading) {
-            //  isLoading = false;
-            //}
-          }, buildWhen: (prevState, currState) {
-            print("List Length: ${currState.news.length}");
-            print(
-                "Max: Previous: ${currState.hasReachedMax}, Current: ${currState.hasReachedMax}");
-            print(
-                "Status: Previous: ${currState.status}, Current: ${currState.status}");
+              listener: (context, currState) {},
+              buildWhen: (prevState, currState) {
+                if (prevState.status == NewsStatus.loadingMore &&
+                    currState.status == NewsStatus.loaded) {
+                  isLoading = false;
+                }
 
-            if (prevState.status == NewsStatus.loadingMore &&
-                currState.status == NewsStatus.loaded) {
-              isLoading = false;
-            }
+                return (prevState.status != currState.status ||
+                    prevState.hasReachedMax != currState.hasReachedMax);
+              },
+              builder: (context, currState) {
+                if (currState.status == NewsStatus.loaded ||
+                    currState.status == NewsStatus.loadingMore) {
+                  return IndexedStack(
+                    index: _selectedIndex,
+                    children: [
+                      //Todo: Create screen with this widget tree
+                      RefreshIndicator(
+                        onRefresh: () {
+                          return context.read<NewsCubit>().fetchNews();
+                        },
+                        child: ListView.separated(
+                          controller: _scrollController,
+                          physics: const BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics(),
+                          ),
+                          itemCount: (currState.hasReachedMax)
+                              ? currState.news.length
+                              : currState.news.length + 1,
+                          itemBuilder: (context, index) {
+                            return (index >= currState.news.length)
+                                // Todo: Replace hard coded size
+                                ? const BottomLoaderIndicator()
+                                : GestureDetector(
+                                    onTap: () {
+                                      //Todo: Move add to favorites to icon button
+                                      context
+                                          .read<FavoritesCubit>()
+                                          .insertArticle(currState.news[index]);
 
-            return (prevState.status != currState.status ||
-                prevState.hasReachedMax != currState.hasReachedMax);
-          }, builder: (context, newsState) {
-            if (newsState.status == NewsStatus.loaded ||
-                newsState.status == NewsStatus.loadingMore) {
-              return IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  //Todo: Create widget - simplify code
-                  RefreshIndicator(
-                    onRefresh: () {
-                      return context.read<NewsCubit>().fetchNews();
-                    },
-                    child: ListView.separated(
-                      controller: _scrollController,
-                      physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      itemCount: (newsState.hasReachedMax)
-                          ? newsState.news.length
-                          : newsState.news.length + 1,
-                      itemBuilder: (context, index) {
-                        return (index >= newsState.news.length)
-                            // Todo: Replace hard coded size
-                            ? const BottomLoaderIndicator()
-                            : GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (context) {
-                                      return const ArticlePreview();
-                                    }),
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (context) {
+                                          return const ArticlePreview();
+                                        }),
+                                      );
+                                    },
+                                    child: ArticleThumbnail(
+                                        article: currState.news[index]),
                                   );
-                                },
-                                child: ArticleThumbnail(
-                                    article: newsState.news[index]),
-                              );
-                      },
-                      separatorBuilder: (context, index) => const Divider(
-                        color: Color(0x00000000),
+                          },
+                          separatorBuilder: (context, index) => const Divider(
+                            color: Color(0x00000000),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Center(child: Text("${newsState.news.length}")),
-                  Center(child: Text("${newsState.news.length}")),
-                ],
-              );
-            }
-            if (newsState.status == NewsStatus.error) {
-              return const Center(child: Icon(Icons.error));
-            }
-            return const Center(child: CircularProgressIndicator());
-          }),
+                      Center(child: Text("${currState.news.length}")),
+                      FavoritesScreen(),
+                    ],
+                  );
+                }
+                if (currState.status == NewsStatus.error) {
+                  return const Center(child: Icon(Icons.error));
+                }
+                return const Center(child: CircularProgressIndicator());
+              }),
         ),
       ),
     );
