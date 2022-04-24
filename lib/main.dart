@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/bloc/favorites_cubit.dart';
+import 'package:market_news_app/bloc/history_cubit.dart';
 import 'package:market_news_app/bloc/news_cubit.dart';
 import 'package:market_news_app/news_tab_bar_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +25,10 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<NewsCubit>(create: (context) => NewsCubit()..fetchNews()),
         BlocProvider<SearchCubit>(create: (context) => SearchCubit()),
-        BlocProvider<FavoritesCubit>(create: (context) => FavoritesCubit()),
+        BlocProvider<FavoritesCubit>(
+          create: (context) => FavoritesCubit()..getArticles(),
+        ),
+        BlocProvider<HistoryCubit>(create: (context) => HistoryCubit()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

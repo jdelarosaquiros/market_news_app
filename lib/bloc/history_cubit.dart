@@ -3,71 +3,72 @@ import 'package:equatable/equatable.dart';
 import 'package:market_news_app/models/article_model.dart';
 import 'package:market_news_app/services/local_database_helper.dart';
 
-part 'favorites_state.dart';
+part 'history_state.dart';
 
-class FavoritesCubit extends Cubit<FavoritesState> {
-  FavoritesCubit() : super(const FavoritesInitial(news: []));
+class HistoryCubit extends Cubit<HistoryState> {
+  HistoryCubit() : super(const HistoryInitial(news: []));
 
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   Future<void> getArticles() async {
     List<Article> articles = [];
 
-    emit(FavoritesLoading(news: articles));
+    emit(HistoryLoading(news: articles));
 
     try {
       articles.addAll(
-        await _dbHelper.queryAllArticles(DatabaseHelper.favoritesTableName),
+        await _dbHelper.queryAllArticles(DatabaseHelper.historyTableName),
       );
       articles.sort((article1, article2) {
         return article2.dateUnix.compareTo(article1.dateUnix);
       });
-      emit(FavoritesLoaded(news: articles));
+      emit(HistoryLoaded(news: articles));
     } catch (error) {
       //Todo: Implement error handling
       print(error.toString());
-      emit(FavoritesError(news: articles));
+      emit(HistoryError(news: articles));
     }
   }
 
   Future<void> insertArticle(Article article) async {
 
-    List<Article> articles = [...state.news];
+    List<Article> articles = state.news;
 
     if(articles.contains(article)) return;
 
-    emit(FavoritesLoading(news: state.news));
+    emit(HistoryLoading(news: articles));
 
     try {
-      await _dbHelper.insert(article, DatabaseHelper.favoritesTableName);
+      await _dbHelper.insert(article, DatabaseHelper.historyTableName);
       articles.add(article);
       articles.sort((article1, article2) {
         return article2.dateUnix.compareTo(article1.dateUnix);
       });
-      emit(FavoritesLoaded(news: articles));
+      emit(HistoryLoaded(news: articles));
     } catch (error) {
       //Todo: Implement error handling
       print(error.toString());
-      emit(FavoritesError(news: articles));
+      emit(HistoryError(news: articles));
     }
   }
 
   Future<void> deleteArticle(Article article) async {
 
-    List<Article> articles = [...state.news];
+    List<Article> articles = state.news;
 
-    if(!articles.any((element) => element.id == article.id)) return;
+    if(!articles.contains(article)) return;
 
-    emit(FavoritesLoading(news: state.news));
+    emit(HistoryLoading(news: articles));
 
     try {
 
-      await _dbHelper.delete(article.id, DatabaseHelper.favoritesTableName);
-      articles.removeWhere((element) => element.id == article.id);
-      emit(FavoritesLoaded(news: articles));
+      await _dbHelper.delete(article.id, DatabaseHelper.historyTableName);
+      articles.remove(article);
+      emit(HistoryLoaded(news: articles));
     } catch (error) {
       //Todo: Implement error handling
-      emit(FavoritesError(news: articles));
+      print(error.toString());
+      emit(HistoryError(news: articles));
     }
   }
 }

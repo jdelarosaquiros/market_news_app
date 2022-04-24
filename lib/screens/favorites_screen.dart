@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/bloc/favorites_cubit.dart';
-
-import '../widgets/article_thumbnail.dart';
+import '../widgets/article_thumbnail_miniature.dart';
 import 'article_preview.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -38,7 +37,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     ),
                     child: SizedBox(
                       child: const Center(
-                        child: Text("No articles found."),
+                        child: Text("No added article."),
                       ),
                       height: MediaQuery.of(context).size.height / 2,
                     ),
@@ -52,9 +51,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       return GestureDetector(
                         onTap: () {
                           //Todo: Move delete favorite to icon button
-                          context
-                              .read<FavoritesCubit>()
-                              .deleteArticle(currState.news[index]);
+                          // context
+                          //     .read<FavoritesCubit>()
+                          //     .deleteArticle(currState.news[index]);
 
                           Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) {
@@ -62,23 +61,31 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                             }),
                           );
                         },
-                        child: ArticleThumbnail(article: currState.news[index]),
+                        child: ArticleThumbnailMiniature(
+                          article: currState.news[index],
+                          onRemoved: () => context
+                              .read<FavoritesCubit>()
+                              .deleteArticle(currState.news[index]),
+                        ),
                       );
                     },
-                    separatorBuilder: (context, index) => const Divider(
-                      color: Color(0x00000000),
-                    ),
+                    separatorBuilder: (context, index) => const SizedBox(),
                   ),
           );
         }
         if (currState is FavoritesError) {
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            child: SizedBox(
-              child: const Center(child: Icon(Icons.error_outline_rounded)),
-              height: MediaQuery.of(context).size.height / 2,
+          return RefreshIndicator(
+            onRefresh: () {
+              return context.read<FavoritesCubit>().getArticles();
+            },
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: SizedBox(
+                child: const Center(child: Icon(Icons.error_outline_rounded)),
+                height: MediaQuery.of(context).size.height / 2,
+              ),
             ),
           );
         }

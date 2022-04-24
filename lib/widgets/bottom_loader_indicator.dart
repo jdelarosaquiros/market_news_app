@@ -6,7 +6,7 @@ class BottomLoaderIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Container(
         alignment: Alignment.center,
         child: const Center(

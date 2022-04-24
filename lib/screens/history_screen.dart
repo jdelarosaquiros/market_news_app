@@ -1,71 +1,94 @@
-import 'package:sqflite/sqflite.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:market_news_app/bloc/history_cubit.dart';
 
-//Todo: Implement Favorite and History Database Tables (Change this template).
-class HistoryDatabase {
-  static Database? _database;
-  static const String _databaseName = "HistoryDatabase.db";
-  static const String _tableName = "history_table", _columnId = "id";
+import '../widgets/article_thumbnail_miniature.dart';
+import 'article_preview.dart';
 
-  static const String birdName = "birdName";
-  static const String birdDescription = "columnDescription";
-  static const String picture = "picture";
-  static const String latitude = "latitude", longitude = "longitude";
+class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({Key? key}) : super(key: key);
 
-  HistoryDatabase._privateConstructor();
-   static final HistoryDatabase instance = HistoryDatabase._privateConstructor();
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
 
-  static const int _databaseVersion = 1;
-
-  Future<Database?> get database async {
-    if (_database != null) return _database;
-
-    _database = await _initDatabase();
-
-    return _database;
+class _HistoryScreenState extends State<HistoryScreen> {
+  @override
+  void initState() {
+    context.read<HistoryCubit>().getArticles();
+    super.initState();
   }
 
-  Future<Database> _initDatabase() async {
-    Directory docDirectory = await getApplicationDocumentsDirectory();
-    String path = "$docDirectory$_databaseName";
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: BlocBuilder<HistoryCubit, HistoryState>(
+          buildWhen: (prevState, currState) {
+        return (prevState != currState);
+      }, builder: (context, currState) {
+        if (currState is HistoryLoaded) {
+          return RefreshIndicator(
+            onRefresh: () {
+              return context.read<HistoryCubit>().getArticles();
+            },
+            child: (currState.news.isEmpty)
+                ? SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    child: SizedBox(
+                      child: const Center(
+                        child: Text("No visited article."),
+                      ),
+                      height: MediaQuery.of(context).size.height / 2,
+                    ),
+                  )
+                : ListView.separated(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
+                    itemCount: currState.news.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          //Todo: Move delete favorite to icon button
+                          context
+                              .read<HistoryCubit>()
+                              .deleteArticle(currState.news[index]);
 
-    return await openDatabase(
-      path,
-      version: _databaseVersion,
-      onCreate: (Database db, int version) async {
-        await db.execute('''
-          CREATE TABLE $_tableName (
-          $_columnId INTEGER PRIMARY KEY,
-          $birdName TEXT NOT NULL,
-          $birdDescription TEXT NOT NULL, 
-          $picture BLOB NOT NULL,
-          $latitude REAL NOT NULL,
-          $longitude REAL NOT NULL
-          )
-          ''');
-      },
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) {
+                              return const ArticlePreview();
+                            }),
+                          );
+                        },
+                        child: ArticleThumbnailMiniature(
+                          article: currState.news[index],
+                          onRemoved: () {
+                            context
+                                .read<HistoryCubit>()
+                                .deleteArticle(currState.news[index]);
+                          },
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) => const SizedBox(),
+                  ),
+          );
+        }
+        if (currState is HistoryError) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+            child: SizedBox(
+              child: const Center(child: Icon(Icons.error_outline_rounded)),
+              height: MediaQuery.of(context).size.height / 2,
+            ),
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      }),
     );
-  }
-
-  Future<int> insert(Map<String, dynamic> row) async {
-
-    Database? db = await instance.database;
-
-    return await db!.insert(_tableName, row);
-  }
-
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
-
-    Database? db = await instance.database;
-
-    return await db!.query(_tableName);
-  }
-
-  Future<int> delete(int id) async {
-
-    Database? db = await instance.database;
-
-    return await db!.delete(_tableName, where: "$_columnId = ?", whereArgs: [id]);
   }
 }

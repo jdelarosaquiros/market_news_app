@@ -1,6 +1,6 @@
 part of 'favorites_cubit.dart';
 
-abstract class FavoritesState extends Equatable{
+abstract class FavoritesState extends Equatable {
   final List<Article> news;
 
   const FavoritesState({required this.news});
@@ -9,24 +9,31 @@ abstract class FavoritesState extends Equatable{
   List<Object> get props => [news];
 }
 
-class FavoritesInitial extends FavoritesState{
-
+class FavoritesInitial extends FavoritesState {
   const FavoritesInitial({required List<Article> news}) : super(news: news);
-
 }
 
-class FavoritesLoading extends FavoritesState{
-
+class FavoritesLoading extends FavoritesState {
   const FavoritesLoading({required List<Article> news}) : super(news: news);
 }
 
-class FavoritesLoaded extends FavoritesState{
+class FavoritesLoaded extends FavoritesState {
+  late final Map<int, Article> articleMap;
 
-  const FavoritesLoaded({required List<Article> news}) : super(news: news);
+  FavoritesLoaded({required List<Article> news}) : super(news: news){
+      articleMap = _convertListToMap(news);
+  }
 
+  Map<int, Article> _convertListToMap(List<Article> news) {
+    Map<int, Article> articleMap = {};
+
+    for (Article article in news) {
+      articleMap[article.id] = article;
+    }
+    return articleMap;
+  }
 }
 
-class FavoritesError extends FavoritesState{
-
+class FavoritesError extends FavoritesState {
   const FavoritesError({required List<Article> news}) : super(news: news);
 }

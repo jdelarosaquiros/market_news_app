@@ -15,6 +15,7 @@ class NetworkHelper {
       return jsonDecode(data);
     } else {
       print("Error ${response.statusCode}");
+      throw Exception("Error ${response.statusCode}");
     }
   }
 }

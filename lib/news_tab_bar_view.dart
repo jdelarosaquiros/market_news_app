@@ -4,6 +4,8 @@ import 'package:market_news_app/bloc/news_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:market_news_app/screens/article_preview.dart';
 import 'package:market_news_app/screens/favorites_screen.dart';
+import 'package:market_news_app/screens/history_screen.dart';
+import 'package:market_news_app/screens/home_screen.dart';
 import 'package:market_news_app/screens/search_screen.dart';
 import 'package:market_news_app/widgets/article_thumbnail.dart';
 import 'package:market_news_app/widgets/bottom_loader_indicator.dart';
@@ -57,7 +59,12 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
       child: Scaffold(
         appBar: AppBar(
           //toolbarHeight: 30,
-          title: const Text("News"), //TODO: Replace with app icon and name
+          title: (_selectedIndex == 0)
+              ? const Text("News")
+              : (_selectedIndex == 1)
+                  ? const Text("History")
+                  : const Text("Favorites"),
+          //TODO: Replace with app icon and name
           actions: [
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white, size: 30),
@@ -126,74 +133,16 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
             ),
           ],
         ),
-
         body: SafeArea(
-          child: BlocConsumer<NewsCubit, NewsState>(
-              listener: (context, currState) {},
-              buildWhen: (prevState, currState) {
-                if (prevState.status == NewsStatus.loadingMore &&
-                    currState.status == NewsStatus.loaded) {
-                  isLoading = false;
-                }
-
-                return (prevState.status != currState.status ||
-                    prevState.hasReachedMax != currState.hasReachedMax);
-              },
-              builder: (context, currState) {
-                if (currState.status == NewsStatus.loaded ||
-                    currState.status == NewsStatus.loadingMore) {
-                  return IndexedStack(
-                    index: _selectedIndex,
-                    children: [
-                      //Todo: Create screen with this widget tree
-                      RefreshIndicator(
-                        onRefresh: () {
-                          return context.read<NewsCubit>().fetchNews();
-                        },
-                        child: ListView.separated(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(
-                            parent: AlwaysScrollableScrollPhysics(),
-                          ),
-                          itemCount: (currState.hasReachedMax)
-                              ? currState.news.length
-                              : currState.news.length + 1,
-                          itemBuilder: (context, index) {
-                            return (index >= currState.news.length)
-                                // Todo: Replace hard coded size
-                                ? const BottomLoaderIndicator()
-                                : GestureDetector(
-                                    onTap: () {
-                                      //Todo: Move add to favorites to icon button
-                                      context
-                                          .read<FavoritesCubit>()
-                                          .insertArticle(currState.news[index]);
-
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) {
-                                          return const ArticlePreview();
-                                        }),
-                                      );
-                                    },
-                                    child: ArticleThumbnail(
-                                        article: currState.news[index]),
-                                  );
-                          },
-                          separatorBuilder: (context, index) => const Divider(
-                            color: Color(0x00000000),
-                          ),
-                        ),
-                      ),
-                      Center(child: Text("${currState.news.length}")),
-                      FavoritesScreen(),
-                    ],
-                  );
-                }
-                if (currState.status == NewsStatus.error) {
-                  return const Center(child: Icon(Icons.error));
-                }
-                return const Center(child: CircularProgressIndicator());
-              }),
+          child: IndexedStack(
+            index: _selectedIndex,
+            children: [
+              //Todo: Create screen with this widget tree
+              HomeScreen(),
+              HistoryScreen(),
+              FavoritesScreen(),
+            ],
+          ),
         ),
       ),
     );

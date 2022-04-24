@@ -1,43 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/models/article_model.dart';
-import 'package:market_news_app/services/time_helper.dart';
 
-class ArticleThumbnail extends StatelessWidget {
+import '../bloc/favorites_cubit.dart';
+
+class ArticleThumbnail extends StatefulWidget {
   final Article article;
+  final String timeAgo;
 
-  const ArticleThumbnail({Key? key, required this.article}) : super(key: key);
+  const ArticleThumbnail({
+    Key? key,
+    required this.article,
+    required this.timeAgo,
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    String timeAgo = TimeHelper().relativeTime(article.dateUnix);
+  State<ArticleThumbnail> createState() => _ArticleThumbnailState();
+}
 
-    return Container(
-      color: Colors.black,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(
-            article.image,
-            fit: BoxFit.cover,
-            height: MediaQuery.of(context).size.width * 0.4,
-            width: MediaQuery.of(context).size.width,
+class _ArticleThumbnailState extends State<ArticleThumbnail> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Image.network(
+          widget.article.image,
+          fit: BoxFit.cover,
+          height: MediaQuery.of(context).size.width * 0.4,
+          width: MediaQuery.of(context).size.width,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 10, 5, 0),
+          child: Text(
+            widget.article.title,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text(
-              article.title,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "${widget.article.source}  ·  ${widget.timeAgo}",
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              BlocBuilder<FavoritesCubit, FavoritesState>(
+                builder: (context, currState) {
+                  if (currState is FavoritesLoaded) {
+                    bool isFavorite =
+                        currState.articleMap.containsKey(widget.article.id);
+                    return IconButton(
+                        onPressed: () {
+                          if (!isFavorite) {
+                            context
+                                .read<FavoritesCubit>()
+                                .insertArticle(widget.article);
+                          } else {
+                            context
+                                .read<FavoritesCubit>()
+                                .deleteArticle(widget.article);
+                          }
+                        },
+                        icon: (isFavorite)
+                            ? const Icon(Icons.favorite)
+                            : const Icon(Icons.favorite_border));
+                  }
+                  return IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.favorite_border),
+                  );
+                },
+                buildWhen: (prevState, currState) {
+                  return (prevState != currState);
+                },
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 2, 10, 10),
-            child: Text(
-              "${article.source}  ·  $timeAgo",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

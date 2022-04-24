@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:market_news_app/bloc/favorites_cubit.dart';
+import '../bloc/history_cubit.dart';
 import '../bloc/search_cubit.dart';
+import '../services/time_helper.dart';
 import '../widgets/article_thumbnail.dart';
 import 'article_preview.dart';
 
@@ -13,6 +14,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final TimeHelper _timeHelper = TimeHelper();
   String _text = "";
 
   @override
@@ -72,6 +74,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
+                              context
+                                  .read<HistoryCubit>()
+                                  .insertArticle(currState.news[index]);
 
                               Navigator.of(context).push(
                                 MaterialPageRoute(builder: (context) {
@@ -80,11 +85,16 @@ class _SearchScreenState extends State<SearchScreen> {
                               );
                             },
                             child: ArticleThumbnail(
-                                article: currState.news[index]),
+                              article: currState.news[index],
+                              timeAgo: _timeHelper
+                                  .relativeTime(currState.news[index].dateUnix),
+                            ),
                           );
                         },
-                        separatorBuilder: (context, index) => const Divider(
-                          color: Color(0x00000000),
+                        separatorBuilder: (context, index) => Container(
+                          color: const Color(0x52525252),
+                          height: 8,
+                          width: MediaQuery.of(context).size.width,
                         ),
                       ),
                     );

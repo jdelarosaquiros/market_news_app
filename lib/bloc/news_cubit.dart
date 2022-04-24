@@ -27,7 +27,7 @@ class NewsCubit extends Cubit<NewsState> {
       emit(state.copyWith(
           news: news, status: NewsStatus.loaded, hasReachedMax: false));
     } catch (error) {
-      //Todo: Get data from database and throw error from network helper
+      loadNews();
       print(error.toString());
       emit(state.copyWith(status: NewsStatus.error));
     }

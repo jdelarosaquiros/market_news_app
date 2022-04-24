@@ -1,6 +1,7 @@
 class Article {
   String category, date, title, image, source, summary, url;
   int id, dateUnix;
+  bool isFavorite;
 
   Article({
     required this.id,
@@ -12,5 +13,6 @@ class Article {
     required this.source,
     required this.summary,
     required this.url,
+    this.isFavorite = false,
   });
 }
