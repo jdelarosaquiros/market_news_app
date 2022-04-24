@@ -32,11 +32,11 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   Future<void> insertArticle(Article article) async {
 
-    List<Article> articles = state.news;
+    List<Article> articles = [...state.news];
 
-    if(articles.contains(article)) return;
+    if(articles.any((element) => element.id == article.id)) return;
 
-    emit(HistoryLoading(news: articles));
+    emit(HistoryLoading(news: state.news));
 
     try {
       await _dbHelper.insert(article, DatabaseHelper.historyTableName);
@@ -54,11 +54,11 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   Future<void> deleteArticle(Article article) async {
 
-    List<Article> articles = state.news;
+    List<Article> articles = [...state.news];
 
-    if(!articles.contains(article)) return;
+    if(!articles.any((element) => element.id == article.id)) return;
 
-    emit(HistoryLoading(news: articles));
+    emit(HistoryLoading(news: state.news));
 
     try {
 

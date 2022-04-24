@@ -77,13 +77,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
           );
         }
         if (currState is HistoryError) {
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            child: SizedBox(
-              child: const Center(child: Icon(Icons.error_outline_rounded)),
-              height: MediaQuery.of(context).size.height / 2,
+          return RefreshIndicator(
+            onRefresh: () {
+              return context.read<HistoryCubit>().getArticles();
+            },
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: SizedBox(
+                child: const Center(child: Icon(Icons.error_outline_rounded)),
+                height: MediaQuery.of(context).size.height / 2,
+              ),
             ),
           );
         }

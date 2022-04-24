@@ -34,7 +34,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
 
     List<Article> articles = [...state.news];
 
-    if(articles.contains(article)) return;
+    if(articles.any((element) => element.id == article.id)) return;
 
     emit(FavoritesLoading(news: state.news));
 
