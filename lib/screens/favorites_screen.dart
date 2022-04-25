@@ -5,7 +5,14 @@ import '../widgets/article_thumbnail_miniature.dart';
 import 'article_preview.dart';
 
 class FavoritesScreen extends StatefulWidget {
-  const FavoritesScreen({Key? key}) : super(key: key);
+  final void Function(int index) setSelectedIndex;
+  final int currentIndex;
+
+  const FavoritesScreen({
+    Key? key,
+    required this.setSelectedIndex,
+    required this.currentIndex,
+  }) : super(key: key);
 
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
@@ -49,17 +56,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     itemCount: currState.news.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           //Todo: Move delete favorite to icon button
                           // context
                           //     .read<FavoritesCubit>()
                           //     .deleteArticle(currState.news[index]);
 
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) {
-                              return const ArticlePreview();
-                            }),
-                          );
+                          List<int> args = await Navigator.of(context)
+                              .push(MaterialPageRoute(
+                            builder: (context) => ArticlePreview(
+                              article: currState.news[index],
+                              selectedIndex: widget.currentIndex,
+                            ),
+                          ));
+
+                          widget.setSelectedIndex(args[0]);
                         },
                         child: ArticleThumbnailMiniature(
                           article: currState.news[index],

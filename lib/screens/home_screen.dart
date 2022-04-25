@@ -8,7 +8,14 @@ import '../widgets/bottom_loader_indicator.dart';
 import 'article_preview.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final void Function(int index) setSelectedIndex;
+  final int currentIndex;
+
+  const HomeScreen({
+    Key? key,
+    required this.setSelectedIndex,
+    required this.currentIndex,
+  }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -81,20 +88,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Todo: Replace hard coded size
                         ? const BottomLoaderIndicator()
                         : GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               //Todo: Move add to favorites to icon button
                               context
                                   .read<HistoryCubit>()
                                   .insertArticle(currState.news[index]);
 
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) {
-                                  return const ArticlePreview();
-                                }),
-                              );
+                              List<int>? args = await Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                builder: (context) => ArticlePreview(
+                                  article: currState.news[index],
+                                  selectedIndex: widget.currentIndex,
+                                ),
+                              ));
+                              if(args == null) return;
+
+                              widget.setSelectedIndex(args[0]);
                             },
                             child: ArticleThumbnail(
-
                               article: currState.news[index],
                               timeAgo: _timeHelper
                                   .relativeTime(currState.news[index].dateUnix),

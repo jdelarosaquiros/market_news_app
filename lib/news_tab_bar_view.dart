@@ -20,7 +20,7 @@ class NewsTabBarView extends StatefulWidget {
 }
 
 class _NewsTabBarViewState extends State<NewsTabBarView> {
-  int _selectedIndex = 0;
+  int selectedIndex = 0;
   late ScrollController _scrollController;
   bool isLoading = false;
 
@@ -34,6 +34,12 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void setSelectedIndex(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
   }
 
   void _scrollListener() {
@@ -59,9 +65,9 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
       child: Scaffold(
         appBar: AppBar(
           //toolbarHeight: 30,
-          title: (_selectedIndex == 0)
+          title: (selectedIndex == 0)
               ? const Text("News")
-              : (_selectedIndex == 1)
+              : (selectedIndex == 1)
                   ? const Text("History")
                   : const Text("Favorites"),
           //TODO: Replace with app icon and name
@@ -71,7 +77,10 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) {
-                    return SearchScreen();
+                    return SearchScreen(
+                      setSelectedIndex: setSelectedIndex,
+                      currentIndex: selectedIndex,
+                    );
                   }),
                 );
               },
@@ -80,7 +89,7 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           elevation: 10,
-          currentIndex: _selectedIndex,
+          currentIndex: selectedIndex,
           selectedFontSize: 11,
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white,
@@ -88,8 +97,11 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
           unselectedFontSize: 11,
           backgroundColor: Theme.of(context).colorScheme.primary,
           onTap: (index) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.pop(context);
+            }
             setState(() {
-              _selectedIndex = index;
+              selectedIndex = index;
             });
           },
           items: const [
@@ -135,12 +147,20 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
         ),
         body: SafeArea(
           child: IndexedStack(
-            index: _selectedIndex,
+            index: selectedIndex,
             children: [
-              //Todo: Create screen with this widget tree
-              HomeScreen(),
-              HistoryScreen(),
-              FavoritesScreen(),
+              HomeScreen(
+                setSelectedIndex: setSelectedIndex,
+                currentIndex: selectedIndex,
+              ),
+              HistoryScreen(
+                setSelectedIndex: setSelectedIndex,
+                currentIndex: selectedIndex,
+              ),
+              FavoritesScreen(
+                setSelectedIndex: setSelectedIndex,
+                currentIndex: selectedIndex,
+              ),
             ],
           ),
         ),

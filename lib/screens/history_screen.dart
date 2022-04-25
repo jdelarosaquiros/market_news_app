@@ -6,7 +6,14 @@ import '../widgets/article_thumbnail_miniature.dart';
 import 'article_preview.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+  final void Function(int index) setSelectedIndex;
+  final int currentIndex;
+
+  const HistoryScreen({
+    Key? key,
+    required this.setSelectedIndex,
+    required this.currentIndex,
+  }) : super(key: key);
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -50,17 +57,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     itemCount: currState.news.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           //Todo: Move delete favorite to icon button
                           context
                               .read<HistoryCubit>()
                               .deleteArticle(currState.news[index]);
 
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) {
-                              return const ArticlePreview();
-                            }),
-                          );
+                          List<int> args = await Navigator.of(context)
+                              .push(MaterialPageRoute(
+                            builder: (context) => ArticlePreview(
+                              article: currState.news[index],
+                              selectedIndex: widget.currentIndex,
+                            ),
+                          ));
+
+                          widget.setSelectedIndex(args[0]);
                         },
                         child: ArticleThumbnailMiniature(
                           article: currState.news[index],

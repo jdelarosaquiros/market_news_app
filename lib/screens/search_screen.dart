@@ -7,7 +7,14 @@ import '../widgets/article_thumbnail.dart';
 import 'article_preview.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  final void Function(int index) setSelectedIndex;
+  final int currentIndex;
+
+  const SearchScreen({
+    Key? key,
+    required this.setSelectedIndex,
+    required this.currentIndex,
+  }) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -80,7 +87,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
                               Navigator.of(context).push(
                                 MaterialPageRoute(builder: (context) {
-                                  return const ArticlePreview();
+                                  return ArticlePreview(
+                                    article: currState.news[index],
+                                    selectedIndex: 0,
+                                  );
                                 }),
                               );
                             },
