@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:market_news_app/models/article_model.dart';
 
 part 'search_state.dart';
@@ -43,8 +44,9 @@ class SearchCubit extends Cubit<SearchState> {
       }
       emit(SearchLoaded(news: articles));
     }).catchError((error, stackTrace) {
-      //Todo: Implement error handling
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       emit(const SearchError());
     });
   }

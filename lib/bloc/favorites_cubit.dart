@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:market_news_app/models/article_model.dart';
 import 'package:market_news_app/services/local_database_helper.dart';
 
@@ -24,8 +25,9 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       });
       emit(FavoritesLoaded(news: articles));
     } catch (error) {
-      //Todo: Implement error handling
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       emit(FavoritesError(news: articles));
     }
   }
@@ -46,8 +48,9 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       });
       emit(FavoritesLoaded(news: articles));
     } catch (error) {
-      //Todo: Implement error handling
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       emit(FavoritesError(news: articles));
     }
   }
@@ -66,7 +69,6 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       articles.removeWhere((element) => element.id == article.id);
       emit(FavoritesLoaded(news: articles));
     } catch (error) {
-      //Todo: Implement error handling
       emit(FavoritesError(news: articles));
     }
   }

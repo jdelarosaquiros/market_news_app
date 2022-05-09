@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-//Todo: Implement Favorite and History Database Tables (Change this template).
 class DatabaseHelper {
   static Database? _database;
   static const String _databaseName = "ArticlesDatabase.db";
@@ -19,6 +18,7 @@ class DatabaseHelper {
   static const String sourceFieldName = "source";
   static const String summaryFieldName = "summary";
   static const String urlFieldName = "url";
+  static const String dateVisitedFieldName = "dateVisited";
 
   DatabaseHelper._privateConstructor();
 
@@ -53,8 +53,11 @@ class DatabaseHelper {
           $imageFieldName TEXT NOT NULL,
           $sourceFieldName TEXT NOT NULL,
           $summaryFieldName TEXT NOT NULL,
-          $urlFieldName TEXT NOT NULL
-          )
+          $urlFieldName TEXT NOT NULL,
+          $dateVisitedFieldName TEXT NOT NULL
+          );
+          ''');
+        await db.execute(''' 
           CREATE TABLE $favoritesTableName (
           $idFieldName INTEGER PRIMARY KEY,
           $dateUnixFieldName INTEGER NOT NULL, 
@@ -65,21 +68,8 @@ class DatabaseHelper {
           $sourceFieldName TEXT NOT NULL,
           $summaryFieldName TEXT NOT NULL,
           $urlFieldName TEXT NOT NULL
-          )
+          );
           ''');
-        // await db.execute('''
-        //   CREATE TABLE $favoritesTableName (
-        //   $idFieldName INTEGER PRIMARY KEY,
-        //   $dateUnixFieldName INTEGER NOT NULL,
-        //   $dateFieldName TEXT NOT NULL,
-        //   $categoryFieldName TEXT NOT NULL,
-        //   $titleFieldName TEXT NOT NULL,
-        //   $imageFieldName TEXT NOT NULL,
-        //   $sourceFieldName TEXT NOT NULL,
-        //   $summaryFieldName TEXT NOT NULL,
-        //   $urlFieldName TEXT NOT NULL
-        //   )
-        // ''');
       },
     );
   }
@@ -99,17 +89,22 @@ class DatabaseHelper {
       urlFieldName: article.url,
     };
 
+    if(tableName == historyTableName) {
+      row[dateVisitedFieldName] = article.dateVisited.toString();
+    }
+
     return await db!.insert(tableName, row);
   }
 
   Future<List<Article>> queryAllArticles(tableName) async {
     List<Article> articles = [];
+    Article article;
     Database? db = await instance.database;
 
     List<Map<String, dynamic>> rows = await db!.query(tableName);
 
     for (Map<String, dynamic> row in rows) {
-      articles.add(Article(
+      article = Article(
         id: row[idFieldName],
         dateUnix: row[dateUnixFieldName],
         category: row[categoryFieldName],
@@ -119,14 +114,19 @@ class DatabaseHelper {
         source: row[sourceFieldName],
         summary: row[summaryFieldName],
         url: row[urlFieldName],
-      ));
+      );
+
+      if(tableName == historyTableName) {
+         article.dateVisited = int.parse(row[dateVisitedFieldName]);
+      }
+
+      articles.add(article);
     }
     return articles;
   }
 
   Future<int> delete(int id, tableName) async {
     Database? db = await instance.database;
-
     return await db!
         .delete(tableName, where: "$idFieldName = ?", whereArgs: [id]);
   }

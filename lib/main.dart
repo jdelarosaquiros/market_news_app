@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/bloc/favorites_cubit.dart';
@@ -28,7 +27,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<FavoritesCubit>(
           create: (context) => FavoritesCubit()..getArticles(),
         ),
-        BlocProvider<HistoryCubit>(create: (context) => HistoryCubit()),
+        BlocProvider<HistoryCubit>(
+            create: (context) => HistoryCubit()..getArticles()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

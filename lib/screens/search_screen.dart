@@ -43,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
               Expanded(
                   child: TextFormField(
                 onChanged: (value) => _text = value,
-                textInputAction: TextInputAction.done,
+                textInputAction: TextInputAction.search,
                 onFieldSubmitted: (_) {
                   context.read<SearchCubit>().searchArticle(_text);
                 },
@@ -58,7 +58,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ]),
             decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.all(Radius.circular(7))),
+                borderRadius: const BorderRadius.all(Radius.circular(7))),
           ),
         ),
         body: SafeArea(

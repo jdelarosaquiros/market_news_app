@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/bloc/news_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:market_news_app/screens/article_preview.dart';
 import 'package:market_news_app/screens/favorites_screen.dart';
 import 'package:market_news_app/screens/history_screen.dart';
 import 'package:market_news_app/screens/home_screen.dart';
 import 'package:market_news_app/screens/search_screen.dart';
-import 'package:market_news_app/widgets/article_thumbnail.dart';
-import 'package:market_news_app/widgets/bottom_loader_indicator.dart';
-
-import 'bloc/favorites_cubit.dart';
 
 class NewsTabBarView extends StatefulWidget {
   const NewsTabBarView({Key? key}) : super(key: key);
@@ -65,12 +60,38 @@ class _NewsTabBarViewState extends State<NewsTabBarView> {
       child: Scaffold(
         appBar: AppBar(
           //toolbarHeight: 30,
-          title: (selectedIndex == 0)
-              ? const Text("News")
-              : (selectedIndex == 1)
-                  ? const Text("History")
-                  : const Text("Favorites"),
-          //TODO: Replace with app icon and name
+          title: Row(children: [
+            Image.asset(
+              "images/playstore.png",
+              fit: BoxFit.fill,
+              width: 35,
+              height: 30,
+            ),
+            const SizedBox(width: 5),
+            (selectedIndex == 0)
+                ? Text(
+                    "News",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontSize: 30),
+                  )
+                : (selectedIndex == 1)
+                    ? Text(
+                        "History",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(fontSize: 30),
+                      )
+                    : Text(
+                        "Favorites",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(fontSize: 30),
+                      ),
+          ]),
           actions: [
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white, size: 30),

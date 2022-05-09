@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_news_app/bloc/favorites_cubit.dart';
+import '../bloc/history_cubit.dart';
 import '../widgets/article_thumbnail_miniature.dart';
 import 'article_preview.dart';
 
@@ -57,18 +58,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () async {
-                          //Todo: Move delete favorite to icon button
-                          // context
-                          //     .read<FavoritesCubit>()
-                          //     .deleteArticle(currState.news[index]);
+                          context
+                              .read<HistoryCubit>()
+                              .insertArticle(currState.news[index]);
 
-                          List<int> args = await Navigator.of(context)
+                          List<int>? args = await Navigator.of(context)
                               .push(MaterialPageRoute(
                             builder: (context) => ArticlePreview(
                               article: currState.news[index],
                               selectedIndex: widget.currentIndex,
                             ),
                           ));
+                          if (args == null) return;
 
                           widget.setSelectedIndex(args[0]);
                         },
@@ -94,7 +95,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 parent: AlwaysScrollableScrollPhysics(),
               ),
               child: SizedBox(
-                child: const Center(child: Icon(Icons.error_outline_rounded)),
+                child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline_rounded,
+                          size: 34,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "Error occurred while loading favorites.",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        )
+                      ],
+                    )),
                 height: MediaQuery.of(context).size.height / 2,
               ),
             ),

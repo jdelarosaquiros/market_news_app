@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:market_news_app/keys.dart';
 import 'package:market_news_app/services/time_helper.dart';
 import '../models/article_model.dart';
@@ -12,8 +13,8 @@ class NewsCubit extends Cubit<NewsState> {
   final int queryLimit = 3;
 
   NewsCubit()
-      : super(NewsState(
-            news: const [], status: NewsStatus.initial, hasReachedMax: false));
+      : super(const NewsState(
+            news: [], status: NewsStatus.initial, hasReachedMax: false));
 
   Future<void> fetchNews() async {
     List<Article> news = [];
@@ -21,15 +22,19 @@ class NewsCubit extends Cubit<NewsState> {
     emit(state.copyWith(status: NewsStatus.loading));
 
     try {
-      //Todo: Change loading states - include saving and saved
       news = await getMarketNews();
       saveArticlesInDatabase(news: news);
       emit(state.copyWith(
           news: news, status: NewsStatus.loaded, hasReachedMax: false));
     } catch (error) {
-      loadNews();
-      print(error.toString());
-      emit(state.copyWith(status: NewsStatus.error));
+      try {
+        loadNews();
+      } catch (error) {
+        if (kDebugMode) {
+          print(error.toString());
+        }
+        emit(state.copyWith(status: NewsStatus.error));
+      }
     }
   }
 
@@ -61,7 +66,6 @@ class NewsCubit extends Cubit<NewsState> {
     return news;
   }
 
-  //Todo: Delete comments
   void saveArticlesInDatabase({required List<Article> news}) {
     CollectionReference articleCollection =
     FirebaseFirestore.instance.collection('articles');
@@ -123,8 +127,9 @@ class NewsCubit extends Cubit<NewsState> {
       emit(state.copyWith(
           news: [...state.news, ...articles], status: NewsStatus.loaded));
     }).catchError((error) {
-      //Todo: Fix this error
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       emit(state.copyWith(status: NewsStatus.error));
     });
   }

@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _scrollListener() {
-    const double scrollThreshold = 400;
+    const double scrollThreshold = 700;
     const double offset = 0;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
@@ -85,11 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       : currState.news.length + 1,
                   itemBuilder: (context, index) {
                     return (index >= currState.news.length)
-                        // Todo: Replace hard coded size
                         ? const BottomLoaderIndicator()
                         : GestureDetector(
                             onTap: () async {
-                              //Todo: Move add to favorites to icon button
                               context
                                   .read<HistoryCubit>()
                                   .insertArticle(currState.news[index]);
@@ -101,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   selectedIndex: widget.currentIndex,
                                 ),
                               ));
-                              if(args == null) return;
+                              if (args == null) return;
 
                               widget.setSelectedIndex(args[0]);
                             },
@@ -121,7 +119,34 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (currState.status == NewsStatus.error) {
-              return const Center(child: Icon(Icons.error));
+              return RefreshIndicator(
+                onRefresh: () {
+                  return context.read<NewsCubit>().fetchNews();
+                },
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                  child: SizedBox(
+                    child: Center(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline_rounded,
+                          size: 34,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "Could not connect to the server.",
+                          style: Theme.of(context).textTheme.labelLarge,
+                        )
+                      ],
+                    )),
+                    height: MediaQuery.of(context).size.height / 2,
+                  ),
+                ),
+              );
             }
             return const Center(child: CircularProgressIndicator());
           }),

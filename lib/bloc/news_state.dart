@@ -3,11 +3,11 @@ part of 'news_cubit.dart';
 enum NewsStatus { initial, loading, loadingMore, loaded, saving, saved, error }
 
 class NewsState extends Equatable {
-  List<Article> news;
-  NewsStatus status;
-  bool hasReachedMax;
+  final List<Article> news;
+  final NewsStatus status;
+  final bool hasReachedMax;
 
-  NewsState({
+  const NewsState({
     required this.news,
     required this.status,
     required this.hasReachedMax,
