@@ -7,6 +7,6 @@ The purpose of the market news app is to keep its users updated with the latest 
 This app gets the 100 most recent news from Finnhub. Though, the Finnhub API only returns the 100 most recent news, so it doesn’t keep track of older news. To fix this problem, the app stores all news in Firestore, which is a cloud database. By storing them in a database, it allows the app to access older news. Since the app doesn’t ask for user registration, it saves the history and favorite lists in the memory. It uses the sqflite package which is the flutter plugin for SQLite, a SQL database. To manage the state of the news, favorite, history, and search lists, the app uses Cubit. Other packages that the app uses are timeago and intl to calculate the publish time and http to make the request to the Finnhub API. Since Finnhub only gives the url to the article, the app has to use webview_flutter to show the full article.
 
 ## Screenshots
-![Home Page](/images/home_screenshot.png = 580x1645)  
+![Home Page](/images/home_screenshot.png | width=580 height=1645)  
 
 ![Preview Page](/images/preview_screenshot.png = 580x1645)  
