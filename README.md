@@ -8,6 +8,6 @@ This app gets the 100 most recent news from Finnhub. Though, the Finnhub API onl
 
 ## Screenshots
 <img src="https://github.com/jdelarosaquiros/market_news_app/blob/new-main/images/home_screenshot.png" height="380" width="1245" />
-![Home Page](/images/home_screenshot.png | width=580)  
+![Home Page|580x1645](/images/home_screenshot.png)  
 
 ![Preview Page](/images/preview_screenshot.png = 580x1645)  
