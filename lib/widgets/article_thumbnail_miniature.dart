@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:market_news_app/models/article_model.dart';
 import 'package:market_news_app/services/time_helper.dart';
 
+/*
+ * This is the miniature thumbnail widget for an article. It is shown in the
+ * favorite and history pages. It contains a remove button, an image, the title,
+ * the source, and the time elapsed since its publish date. The constructor
+ * takes the article and a function that will be executed when the widget
+ * is removed.
+ */
+
 class ArticleThumbnailMiniature extends StatelessWidget {
   final Article article;
 

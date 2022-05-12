@@ -3,6 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+/*
+ * This page shows the url of an article, so users can read the full article
+ * from the source page.
+ */
+
 class WebArticleScreen extends StatefulWidget {
   final String articleUrl;
 

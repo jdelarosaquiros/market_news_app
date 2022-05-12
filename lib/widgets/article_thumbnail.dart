@@ -4,6 +4,15 @@ import 'package:market_news_app/models/article_model.dart';
 
 import '../bloc/favorites_cubit.dart';
 
+/*
+ * This is the thumbnail widget for an article. It is shown in the
+ * home and search pages. It contains an image, the title,
+ * the source, and the time elapsed since its publish date. It has a
+ * favorite button, and users can tap it to add the article to the favorite
+ * list.The constructor takes the article and the time elapsed since
+ * its publish date.
+ */
+
 class ArticleThumbnail extends StatefulWidget {
   final Article article;
   final String timeAgo;

@@ -5,6 +5,14 @@ import '../bloc/history_cubit.dart';
 import '../widgets/article_thumbnail_miniature.dart';
 import 'article_preview.dart';
 
+/*
+ * This page displays the list of articles in the favorite list. Articles can
+ * be added and removed to this list by tapping the hearts symbol in an
+ * article's thumbnail. It can also be removed by tapping the remove button in
+ * an article's miniature thumbnail. It can also be refreshed in case something
+ * goes wrong and the articles are not loaded.
+ */
+
 class FavoritesScreen extends StatefulWidget {
   final void Function(int index) setSelectedIndex;
   final int currentIndex;

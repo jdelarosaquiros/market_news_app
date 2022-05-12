@@ -6,13 +6,23 @@ import 'package:market_news_app/models/article_model.dart';
 
 part 'search_state.dart';
 
+/*
+ * This class is the Cubit (state management) class for the news in the search
+ * page. It contains the event functions that will change the state of the
+ * news list. It has a function to load all news containing a given text in
+ *  their title. There is also another function that resets the news list.
+ */
+
 class SearchCubit extends Cubit<SearchState> {
   SearchCubit() : super(const SearchInitial());
 
+  // Resets news list to initial state
   void resetState() {
     emit(const SearchInitial());
   }
 
+  // Searches all news containing the passed text in their title and loads them
+  // on the state
   Future<void> searchArticle(String text) async {
     List<Article> articles = [];
     String title = "";

@@ -1,12 +1,19 @@
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+/*
+ * This class contains the logic for getting and calculating the time. It has
+ * two functions that take a unix timestamp. One returns the exact date and
+ * time. The other one returns the time elapsed since the given time.
+ */
+
 class TimeHelper {
 
   TimeHelper(){
     timeago.setLocaleMessages('en', CustomTimeMessages());
   }
 
+  // Returns time elapsed since the given time
   String relativeTime(int timestamp) {
     DateTime formatDate = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     DateTime now = DateTime.now();
@@ -14,6 +21,7 @@ class TimeHelper {
     return timeago.format(now.subtract(difference));
   }
 
+  // Returns exact date and time
   String dateFromTimestamp(int timestamp) {
     DateTime formatDate = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     return DateFormat.yMd().add_jm().format(formatDate);

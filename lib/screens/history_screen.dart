@@ -6,6 +6,14 @@ import '../services/time_helper.dart';
 import '../widgets/article_thumbnail_miniature.dart';
 import 'article_preview.dart';
 
+/*
+ * This page displays the list of articles in the history list. Articles can
+ * be added to this list when users visit the preview page of the article.
+ * It can be removed by tapping the remove button in an article's miniature
+ * thumbnail. It can also be refreshed in case something goes wrong and the
+ * articles are not loaded.
+ */
+
 class HistoryScreen extends StatefulWidget {
   final void Function(int index) setSelectedIndex;
   final int currentIndex;

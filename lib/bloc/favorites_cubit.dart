@@ -6,11 +6,20 @@ import 'package:market_news_app/services/local_database_helper.dart';
 
 part 'favorites_state.dart';
 
+/*
+ * This class is the Cubit (state management) class for the favorite list of
+ * news. It contains the event functions that will change the state of the
+ * favorite list. One function loads the articles from the local database, and
+ * other two functions insert and delete news from the database.
+ */
+
 class FavoritesCubit extends Cubit<FavoritesState> {
   FavoritesCubit() : super(const FavoritesInitial(news: []));
 
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
+  // Loads the favorite list of news from the local database and updates
+  // the state of the list during the process.
   Future<void> getArticles() async {
     List<Article> articles = [];
 
@@ -32,6 +41,8 @@ class FavoritesCubit extends Cubit<FavoritesState> {
     }
   }
 
+  // Inserts an article to the favorite news list, saves it on the database,
+  // and updates the state of the list during the process.
   Future<void> insertArticle(Article article) async {
 
     List<Article> articles = [...state.news];
@@ -55,6 +66,8 @@ class FavoritesCubit extends Cubit<FavoritesState> {
     }
   }
 
+  // Deletes an article from the favorite list and the database
+  // and updates the state of the list during the process.
   Future<void> deleteArticle(Article article) async {
 
     List<Article> articles = [...state.news];

@@ -14,10 +14,11 @@ void main() async {
   runApp(const MyApp());
 }
 
+// This widget is the root of the app, and it loads initial data and sets
+// default theming.
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
             create: (context) => HistoryCubit()..getArticles()),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Market News',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData.dark().copyWith(
           primaryColor: Colors.blue[300],
           indicatorColor: Colors.lightBlue[300],

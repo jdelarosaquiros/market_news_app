@@ -7,6 +7,12 @@ import '../widgets/article_thumbnail.dart';
 import '../widgets/bottom_loader_indicator.dart';
 import 'article_preview.dart';
 
+/*
+ * This widget is the main/home page of the app, and it displays the latest
+ * news and loads older ones when the user reaches the bottom of the list.
+ * It can also be refreshed get the latest news and reset the list of news.
+ */
+
 class HomeScreen extends StatefulWidget {
   final void Function(int index) setSelectedIndex;
   final int currentIndex;
@@ -38,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // This listener loads more articles when the user reaches the bottom of
+  // the list.
   void _scrollListener() {
     const double scrollThreshold = 700;
     const double offset = 0;

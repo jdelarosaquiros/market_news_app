@@ -7,6 +7,14 @@ import 'package:market_news_app/screens/history_screen.dart';
 import 'package:market_news_app/screens/home_screen.dart';
 import 'package:market_news_app/screens/search_screen.dart';
 
+/*
+ * This widget contains the app top and bottom bar, and it has most of the
+ * navigation logic. It can display the home, history, and favorite pages
+ * between the two app bars, and users can swap between those pages in the
+ * bottom bar. It also contains a search button icon that can tap to go to the
+ * search page
+ */
+
 class NewsTabBarView extends StatefulWidget {
   const NewsTabBarView({Key? key}) : super(key: key);
 

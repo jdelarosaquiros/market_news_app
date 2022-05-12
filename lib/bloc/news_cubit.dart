@@ -9,6 +9,15 @@ import '../services/network_helper.dart';
 
 part 'news_state.dart';
 
+/*
+ * This class is the Cubit (state management) class for the news in the home
+ * page. It contains the event functions that will change the state of the
+ * news list. One function gets the 100 latest market news from the Finnhub API
+ * and saves those news in a cloud database (Firestore). The other function
+ * loads older news from the Firestore and appends them to the current list
+ * of news.
+ */
+
 class NewsCubit extends Cubit<NewsState> {
   final int queryLimit = 3;
 
@@ -16,6 +25,8 @@ class NewsCubit extends Cubit<NewsState> {
       : super(const NewsState(
             news: [], status: NewsStatus.initial, hasReachedMax: false));
 
+  // Gets the latest news and saves them on Firestore, and it updates the state
+  // of the news list during the process.
   Future<void> fetchNews() async {
     List<Article> news = [];
 
@@ -38,6 +49,8 @@ class NewsCubit extends Cubit<NewsState> {
     }
   }
 
+  // Gets the 100 latest news from Finnhub API and returns them as a list of
+  // Articles.
   Future<List<Article>> getMarketNews() async {
     List<Article> news = [];
     String title;
@@ -66,6 +79,7 @@ class NewsCubit extends Cubit<NewsState> {
     return news;
   }
 
+  // Saves the articles in the given list in Firestore
   void saveArticlesInDatabase({required List<Article> news}) {
     CollectionReference articleCollection =
     FirebaseFirestore.instance.collection('articles');
@@ -85,6 +99,9 @@ class NewsCubit extends Cubit<NewsState> {
     }
   }
 
+  // Loads more news from Firestore in order of published date and excludes
+  // the news already loaded. It also updates the state of the news during
+  // the process.
   Future<void> loadNews() async {
     List<Article> articles = [];
     Query articleQuery;

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:market_news_app/screens/web_article_screen.dart';
-
 import '../models/article_model.dart';
+
+/*
+ * This widget is the page for previewing an article. It shows the image,
+ * title, source, published date, and summary of the article. It also has
+ * a button to read the full article in the source page. (shows the url of
+ * the article)
+ */
 
 class ArticlePreview extends StatelessWidget {
   final Article article;

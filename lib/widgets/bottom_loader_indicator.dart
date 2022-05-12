@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+/*
+ * This widget is the loading indicator shown when loading more news into the
+ * list of news.
+ */
+
 class BottomLoaderIndicator extends StatelessWidget {
   const BottomLoaderIndicator({Key? key}) : super(key: key);
 

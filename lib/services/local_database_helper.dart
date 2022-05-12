@@ -3,6 +3,11 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
+/*
+ * This class is contains the local database logic. It opens or creates the
+ * tables to save the articles in the history and favorite lists.
+ */
+
 class DatabaseHelper {
   static Database? _database;
   static const String _databaseName = "ArticlesDatabase.db";
@@ -39,6 +44,7 @@ class DatabaseHelper {
     Directory docDirectory = await getApplicationDocumentsDirectory();
     String path = "$docDirectory$_databaseName";
 
+    // Open or create database with tables for history and favorite articles
     return await openDatabase(
       path,
       version: _databaseVersion,
@@ -74,6 +80,7 @@ class DatabaseHelper {
     );
   }
 
+  // Inserts an article in the table with the passed name. Returns index
   Future<int> insert(Article article, String tableName) async {
     Database? db = await instance.database;
 
@@ -96,6 +103,7 @@ class DatabaseHelper {
     return await db!.insert(tableName, row);
   }
 
+  // Queries and returns all articles from a table
   Future<List<Article>> queryAllArticles(tableName) async {
     List<Article> articles = [];
     Article article;
@@ -125,6 +133,7 @@ class DatabaseHelper {
     return articles;
   }
 
+  // Deletes article with the passed id from a table. Returns index of article
   Future<int> delete(int id, tableName) async {
     Database? db = await instance.database;
     return await db!

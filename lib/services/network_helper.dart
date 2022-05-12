@@ -2,6 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+/*
+ * This class makes a connection to and gets data from the passed url.
+ */
+
 class NetworkHelper {
 
   final String url;

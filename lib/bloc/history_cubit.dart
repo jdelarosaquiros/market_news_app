@@ -6,11 +6,20 @@ import 'package:market_news_app/services/local_database_helper.dart';
 
 part 'history_state.dart';
 
+/*
+ * This class is the Cubit (state management) class for the history list of
+ * news. It contains the event functions that will change the state of the
+ * history list. One function loads the articles from the local database, and
+ * other two functions insert and delete news from the database.
+ */
+
 class HistoryCubit extends Cubit<HistoryState> {
   HistoryCubit() : super(const HistoryInitial(news: []));
 
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
+  // Loads the history list from the local database and updates
+  // the state of the list during the process.
   Future<void> getArticles() async {
     List<Article> articles = [];
 
@@ -32,6 +41,8 @@ class HistoryCubit extends Cubit<HistoryState> {
     }
   }
 
+  // Inserts an article to the history list, saves it on the database,
+  // and updates the state of the list during the process.
   Future<void> insertArticle(Article article) async {
     List<Article> articles = [...state.news];
 
@@ -56,6 +67,8 @@ class HistoryCubit extends Cubit<HistoryState> {
     }
   }
 
+  // Deletes an article from the history list and database
+  // and updates the state of the list during the process.
   Future<void> deleteArticle(Article article) async {
     List<Article> articles = [...state.news];
 

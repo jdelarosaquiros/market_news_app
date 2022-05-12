@@ -6,6 +6,12 @@ import '../services/time_helper.dart';
 import '../widgets/article_thumbnail.dart';
 import 'article_preview.dart';
 
+/*
+ * This page of the app displays the news containing, in the title, the text
+ * written in a text field at the top of the page. It can also be refreshed
+ * in case something goes wrong and the articles are not loaded.
+ */
+
 class SearchScreen extends StatefulWidget {
   final void Function(int index) setSelectedIndex;
   final int currentIndex;

@@ -1,3 +1,10 @@
+/*
+ * This class is the model for an article. It contains the following fields:
+ * id, dateUnix, date, category, title, image, source, summary, url, isFavorite,
+ * and dateVisited.
+ */
+
+
 class Article {
   String category, date, title, image, source, summary, url;
   int id, dateUnix;
